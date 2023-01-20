@@ -108,6 +108,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && DEBIAN_FRONTEND=noninteractive cd .. \
     && DEBIAN_FRONTEND=noninteractive opm get leafo/pgmoon \
     && DEBIAN_FRONTEND=noninteractive opm get SkyLothar/lua-resty-jwt \
+    && DEBIAN_FRONTEND=noninteractive opm get fffonion/lua-resty-acme \
     && DEBIAN_FRONTEND=noninteractive rm -Rf openresty-1.19.9.1 ModSecurity ModSecurity-nginx ngx_brotli
 
 COPY index.html /usr/local/openresty/nginx/html/index.html

@@ -19,7 +19,7 @@ ARG RESTY_FAT_IMAGE_TAG="alpine"
 
 ARG RESTY_LUAROCKS_VERSION="3.9.0"
 
-LABEL maintainer="Evan Wies <evan@neomantra.net>"
+LABEL maintainer="Brian Winkers <brian@ultri.com>"
 LABEL resty_fat_image_base="${RESTY_FAT_IMAGE_BASE}"
 LABEL resty_fat_image_tag="${RESTY_FAT_IMAGE_TAG}"
 LABEL resty_luarocks_version="${RESTY_LUAROCKS_VERSION}"
@@ -38,6 +38,25 @@ RUN apk add --no-cache --virtual .build-deps \
         perl \
         unzip \
         wget \
+        git \
+        pcre \
+        pcre2 \
+        m4 \
+        libtool \
+        automake \
+        autoconf \
+        curl-dev \
+        yajl-dev \
+        lmdb-dev \
+        lua-dev \
+        pcre-dev \
+        pcre2-dev \
+        libxslt-dev \
+        libxml2-dev \
+        openssl-dev \
+        perl-dev \
+        geoip-dev \
+        gd-dev \
     && cd /tmp \
     && curl -fSL https://luarocks.github.io/luarocks/releases/luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz -o luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz \
     && tar xzf luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz \
@@ -54,7 +73,42 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk add --no-cache --virtual .gettext gettext \
     && mv /usr/bin/envsubst /tmp/ \
     && apk del .build-deps .gettext \
-    && mv /tmp/envsubst /usr/local/bin/
+    && mv /tmp/envsubst /usr/local/bin/ \
+    && DEBIAN_FRONTEND=noninteractive git clone --depth 1 -b v3/master --single-branch \
+        https://github.com/SpiderLabs/ModSecurity \
+    && DEBIAN_FRONTEND=noninteractive git clone --depth 1 -b master --single-branch \
+        https://github.com/google/ngx_brotli.git \
+    && DEBIAN_FRONTEND=noninteractive cd ModSecurity \
+    && DEBIAN_FRONTEND=noninteractive git submodule init \
+    && DEBIAN_FRONTEND=noninteractive git submodule update \
+    && DEBIAN_FRONTEND=noninteractive ./build.sh \
+    && DEBIAN_FRONTEND=noninteractive ./configure \
+    && DEBIAN_FRONTEND=noninteractive make \
+    && DEBIAN_FRONTEND=noninteractive make install \
+    && DEBIAN_FRONTEND=noninteractive cd .. \
+    && DEBIAN_FRONTEND=noninteractive git clone --depth 1 \
+        https://github.com/SpiderLabs/ModSecurity-nginx.git \
+    && DEBIAN_FRONTEND=noninteractive wget \
+        https://openresty.org/download/openresty-1.19.9.1.tar.gz \
+    && DEBIAN_FRONTEND=noninteractive tar zxvf openresty-1.19.9.1.tar.gz \
+    && DEBIAN_FRONTEND=noninteractive cd openresty-1.19.9.1 \
+    && DEBIAN_FRONTEND=noninteractive ./configure --with-compat --with-file-aio \
+        --with-http_addition_module --with-http_auth_request_module --with-http_dav_module \
+        --with-http_flv_module --with-http_geoip_module=dynamic --with-http_gunzip_module \
+        --with-http_gzip_static_module --with-http_image_filter_module=dynamic --with-http_mp4_module \
+        --with-http_perl_module=dynamic --with-http_random_index_module --with-http_realip_module \
+        --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module \
+        --with-http_stub_status_module --with-http_sub_module --with-http_v2_module \
+        --with-http_xslt_module=dynamic --with-mail --with-mail_ssl_module \
+        --with-pcre-jit --with-stream --with-stream_ssl_module --with-threads \
+        --add-dynamic-module=../ModSecurity-nginx \
+        --add-module=../ngx_brotli \
+    && DEBIAN_FRONTEND=noninteractive make \
+    && DEBIAN_FRONTEND=noninteractive make install \
+    && DEBIAN_FRONTEND=noninteractive cd .. \
+    && DEBIAN_FRONTEND=noninteractive opm get leafo/pgmoon \
+    && DEBIAN_FRONTEND=noninteractive opm get SkyLothar/lua-resty-jwt \
+    && DEBIAN_FRONTEND=noninteractive rm -Rf openresty-1.19.9.1 ModSecurity ModSecurity-nginx ngx_brotli
 
 # Add LuaRocks paths
 # If OpenResty changes, these may need updating:

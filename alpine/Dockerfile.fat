@@ -110,6 +110,8 @@ RUN apk add --no-cache --virtual .build-deps \
     && DEBIAN_FRONTEND=noninteractive opm get SkyLothar/lua-resty-jwt \
     && DEBIAN_FRONTEND=noninteractive rm -Rf openresty-1.19.9.1 ModSecurity ModSecurity-nginx ngx_brotli
 
+COPY index.html /usr/local/openresty/nginx/html/index.html
+
 # Add LuaRocks paths
 # If OpenResty changes, these may need updating:
 #    /usr/local/openresty/bin/resty -e 'print(package.path)'

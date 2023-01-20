@@ -7,6 +7,12 @@
 Docker is a container management platform. OpenResty is a full-fledged web application server by
 bundling the standard nginx core, lots of 3rd-party nginx modules, as well as most of their external dependencies.
 
+# To build for Ultri/Izzup.
+
+```sh
+docker build -t open-platform-gateway -f alpine/Dockerfile.fat . > build.log.txt
+```
+
 # OpenResty Image Tags
 
 It is best practice to pin your images to an explicit image tag.  The [next section](#supported-tags-and-respective-dockerfile-links) below covers the conventions in detail, but here are some common examples:

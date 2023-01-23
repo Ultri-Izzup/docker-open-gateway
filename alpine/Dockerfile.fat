@@ -75,7 +75,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del .build-deps .gettext \
     && mv /tmp/envsubst /usr/local/bin/ \
     && DEBIAN_FRONTEND=noninteractive git clone --depth 1 -b v3/master --single-branch \
-        https://github.com/SpiderLabs/ModSecurity \
+        https://github.com/Ultri-Izzup/ModSecurity \
     && DEBIAN_FRONTEND=noninteractive git clone --depth 1 -b master --single-branch \
         https://github.com/google/ngx_brotli.git \
     && DEBIAN_FRONTEND=noninteractive cd ModSecurity \
@@ -87,7 +87,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && DEBIAN_FRONTEND=noninteractive make install \
     && DEBIAN_FRONTEND=noninteractive cd .. \
     && DEBIAN_FRONTEND=noninteractive git clone --depth 1 \
-        https://github.com/SpiderLabs/ModSecurity-nginx.git \
+        https://github.com/Ultri-Izzup/ModSecurity-nginx.git \
     && DEBIAN_FRONTEND=noninteractive wget \
         https://openresty.org/download/openresty-1.19.9.1.tar.gz \
     && DEBIAN_FRONTEND=noninteractive tar zxvf openresty-1.19.9.1.tar.gz \
@@ -106,10 +106,17 @@ RUN apk add --no-cache --virtual .build-deps \
     && DEBIAN_FRONTEND=noninteractive make \
     && DEBIAN_FRONTEND=noninteractive make install \
     && DEBIAN_FRONTEND=noninteractive cd .. \
-    && DEBIAN_FRONTEND=noninteractive opm get leafo/pgmoon \
-    && DEBIAN_FRONTEND=noninteractive opm get SkyLothar/lua-resty-jwt \
+    && DEBIAN_FRONTEND=noninteractive rm -Rf openresty-1.19.9.1 ModSecurity ModSecurity-nginx ngx_brotli 
+
+RUN DEBIAN_FRONTEND=noninteractive opm get leafo/pgmoon \
+    && DEBIAN_FRONTEND=noninteractive opm get cdbattags/lua-resty-jwt \
     && DEBIAN_FRONTEND=noninteractive opm get fffonion/lua-resty-acme \
-    && DEBIAN_FRONTEND=noninteractive rm -Rf openresty-1.19.9.1 ModSecurity ModSecurity-nginx ngx_brotli
+    && DEBIAN_FRONTEND=noninteractive opm get ledgetech/lua-resty-http \
+    && DEBIAN_FRONTEND=noninteractive opm get bungle/lua-resty-session \
+    && DEBIAN_FRONTEND=noninteractive opm get zmartzone/lua-resty-openidc \
+    && DEBIAN_FRONTEND=noninteractive opm get pintsized/lua-resty-qless \ 
+    && DEBIAN_FRONTEND=noninteractive luarocks install lapis --lua-version=5.1 \
+    && DEBIAN_FRONTEND=noninteractive luarocks install moonscript --lua-version=5.1
 
 COPY index.html /usr/local/openresty/nginx/html/index.html
 

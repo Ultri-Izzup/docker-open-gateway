@@ -11,6 +11,8 @@ bundling the standard nginx core, lots of 3rd-party nginx modules, as well as mo
 
 ```sh
 docker build -t open-platform-gateway -f alpine/Dockerfile.fat . > build.log.txt
+docker image tag open-platform-gateway ultri/open-platform-gateway:latest
+docker image push ultri/open-platform-gateway:latest
 ```
 
 # OpenResty Image Tags
